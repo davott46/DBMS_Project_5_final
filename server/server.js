@@ -37,7 +37,7 @@ app.get('/api/users/:username/task-completions', async (req, res) => {
         ta.area_id,
         ta.area_name,
         ts.statement_id,
-        ts.statement_text,
+        ts.statement_title,
         utd.query_text,
         utd.partial_solution,
         utd.difficulty_level,

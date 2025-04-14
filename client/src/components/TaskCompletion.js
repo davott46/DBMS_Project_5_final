@@ -22,7 +22,7 @@ const TaskCompletion = ({taskCompletions}) => {
   taskCompletions.forEach(task => {
     const areaName = task.area_name;
 
-    // Init area data if does not exist
+    // Init area data if it does not exist
     if (!areaMap[areaName]) {
       areaMap[areaName] = {
         name: areaName,
@@ -43,22 +43,26 @@ const TaskCompletion = ({taskCompletions}) => {
     // Get difficulty if available
     let difficulty = null;
     if (task.difficulty_level !== undefined) difficulty = task.difficulty_level;
-    
 
     // Add task to arear's array of tasks
     areaMap[areaName].tasks.push({
       id: task.statement_id,
-      name: task.statement_text,
+      area_name: task.area_name,
+      title: task.statement_title,
       isCompleted: Boolean(task.query_text) || Boolean(task.partial_solution),
       difficulty: difficulty,
       time_spent: task.processing_time
     });
   });
   
+  console.log('Sample taskCompletions:', taskCompletions[0]);
+
   // Special All Tasks area that aggregates all tasks across areas
   const allTasksArea = {
     name: 'All Tasks',
     area_id: 0, // All tasks is first to be rendered. Do not zero-index existing area_id s
+    //area_name: Object.values(areaMap).flatMap(area => area.area_name),
+    title: Object.values(areaMap).flatMap(area => area.title),
     completed: Object.values(areaMap).reduce((sum, area) => sum + area.completed, 0),
     total: Object.values(areaMap).reduce((sum, area) => sum + area.total, 0),
     tasks: Object.values(areaMap).flatMap(area => area.tasks)
@@ -216,76 +220,91 @@ const TaskCompletion = ({taskCompletions}) => {
                 <Collapse in={expandedAreas[area.name]}>
                   <TableContainer component={Paper}>
                     <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell align="center" sx={{fontWeight: 'bold'}}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                          <TableSortLabel
+                            active={sortConfig.key === 'id' && sortConfig.areaName === area.name}
+                            direction={sortConfig.key === 'id' ? sortConfig.direction : 'asc'}
+                            onClick={() => requestSort('id', area.name)}
+                          >
+                            <span style={{marginRight: '24px'}}></span>
+                            Task ID
+                          </TableSortLabel>
+                        </TableCell>
+                        {area.name === 'All Tasks' && (
+                          <TableCell align="center" sx={{ fontWeight: 'bold' }}>
                             <TableSortLabel
-                              active={sortConfig.key === 'id' && sortConfig.areaName === area.name}
-                              direction={sortConfig.key === 'id' ? sortConfig.direction : 'asc'}
-                              onClick={() => requestSort('id', area.name)}
+                              active={sortConfig.key === 'area_name' && sortConfig.areaName === area.name}
+                              direction={sortConfig.key === 'area_name' ? sortConfig.direction : 'asc'}
+                              onClick={() => requestSort('area_name', area.name)}
                             >
                               <span style={{marginRight: '24px'}}></span>
-                              Task ID
+                              Area Name
                             </TableSortLabel>
                           </TableCell>
-                          <TableCell align="left" sx={{fontWeight: 'bold'}}>
-                            <TableSortLabel
-                              active={sortConfig.key === 'name' && sortConfig.areaName === area.name}
-                              direction={sortConfig.key === 'name' ? sortConfig.direction : 'asc'}
-                              onClick={() => requestSort('name', area.name)}
-                            >
-                              Task
-                            </TableSortLabel>
+                        )}
+                        <TableCell align="left" sx={{ fontWeight: 'bold' }}>
+                          <TableSortLabel
+                            active={sortConfig.key === 'title' && sortConfig.areaName === area.name}
+                            direction={sortConfig.key === 'title' ? sortConfig.direction : 'asc'}
+                            onClick={() => requestSort('title', area.name)}
+                          >
+                            Task
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                          <TableSortLabel
+                            active={sortConfig.key === 'isCompleted' && sortConfig.areaName === area.name}
+                            direction={sortConfig.key === 'isCompleted' ? sortConfig.direction : 'asc'}
+                            onClick={() => requestSort('isCompleted', area.name)}
+                          >
+                            <span style={{marginRight: '24px'}}></span>
+                            Status
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                          <TableSortLabel
+                            active={sortConfig.key === 'difficulty' && sortConfig.areaName === area.name}
+                            direction={sortConfig.key === 'difficulty' ? sortConfig.direction : 'asc'}
+                            onClick={() => requestSort('difficulty', area.name)}
+                          >
+                            <span style={{marginRight: '24px'}}></span>
+                            Difficulty
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>
+                          <TableSortLabel
+                            active={sortConfig.key === 'time_spent' && sortConfig.areaName === area.name}
+                            direction={sortConfig.key === 'time_spent' ? sortConfig.direction : 'asc'}
+                            onClick={() => requestSort('time_spent', area.name)}
+                          >
+                            <span style={{marginRight: '24px'}}></span>
+                            Time Spent
+                          </TableSortLabel>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {sortedTasks.map((task) => (
+                        <TableRow key={task.id}>
+                          <TableCell align="center">{task.id}</TableCell>
+                          {area.name === 'All Tasks' && (
+                            <TableCell align="center">{task.area_name}</TableCell>
+                          )}
+                          <TableCell align="left">{task.title}</TableCell>
+                          <TableCell align="center">
+                            {task.isCompleted ? (
+                              <CheckIcon sx={{ color: 'green' }} />
+                            ) : (
+                              <CloseIcon sx={{ color: 'red' }} />
+                            )}
                           </TableCell>
-                          <TableCell align="center" sx={{fontWeight: 'bold'}}>
-                            <TableSortLabel
-                              active={sortConfig.key === 'isCompleted' && sortConfig.areaName === area.name}
-                              direction={sortConfig.key === 'isCompleted' ? sortConfig.direction : 'asc'}
-                              onClick={() => requestSort('isCompleted', area.name)}
-                            >
-                               <span style={{marginRight: '24px'}}></span>
-                              Status
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell align="center" sx={{fontWeight: 'bold'}}>
-                            <TableSortLabel
-                              active={sortConfig.key === 'difficulty' && sortConfig.areaName === area.name}
-                              direction={sortConfig.key === 'difficulty' ? sortConfig.direction : 'asc'}
-                              onClick={() => requestSort('difficulty', area.name)}
-                            >
-                               <span style={{marginRight: '24px'}}></span>
-                              Difficulty
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell align="center" sx={{fontWeight: 'bold'}}>
-                            <TableSortLabel
-                              active={sortConfig.key === 'time_spent' && sortConfig.areaName === area.name}
-                              direction={sortConfig.key === 'time_spent' ? sortConfig.direction : 'asc'}
-                              onClick={() => requestSort('time_spent', area.name)}
-                            >
-                               <span style={{marginRight: '24px'}}></span>
-                              Time Spent
-                            </TableSortLabel>
-                          </TableCell>
+                          <TableCell align="center">{task.isCompleted ? (task.difficulty || 'N/A') : '-'}</TableCell>
+                          <TableCell align="center">{formatTimeSpent(task.time_spent)}</TableCell>
                         </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {sortedTasks.map((task) => (
-                          <TableRow key={task.id}>
-                            <TableCell align="center">{task.id}</TableCell>
-                            <TableCell align="left">{task.name}</TableCell>
-                            <TableCell align="center">
-                              {task.isCompleted ? (
-                                <CheckIcon sx={{color: 'green'}} />
-                              ) : (
-                                <CloseIcon sx={{color: 'red'}} />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">{task.isCompleted ? (task.difficulty || 'N/A') : '-'}</TableCell>
-                            <TableCell align="center">{formatTimeSpent(task.time_spent)}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
+                      ))}
+                    </TableBody>
                     </Table>
                   </TableContainer>
                 </Collapse>
