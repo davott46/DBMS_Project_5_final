@@ -13,6 +13,7 @@ CREATE TABLE task_areas (
 
 CREATE TABLE task_statements (
     statement_id SERIAL PRIMARY KEY,
+    statement_title TEXT NOT NULL,
     statement_text TEXT NOT NULL,
     area_id INT REFERENCES task_areas(area_id) ON DELETE CASCADE,
     solution_query TEXT NOT NULL,
@@ -48,17 +49,17 @@ INSERT INTO task_areas (area_id, area_name) VALUES
 (3, 'Neo4j'),
 (4, 'MongoDB');
 
-INSERT INTO task_statements (statement_id, statement_text, area_id, solution_query, topic, subtasknumber, maxtime, hint, tasknumber) VALUES
+INSERT INTO task_statements (statement_id, statement_title, statement_text, area_id, solution_query, topic, subtasknumber, maxtime, hint, tasknumber) VALUES
 
 -- Postgres Tasks
-(1, 'For each person you want to know in which department she or he works. Therefore, you have to make
+(1, 'List of people with their department', 'For each person you want to know in which department she or he works. Therefore, you have to make
 an output that contains a person’s first name and last name and the name of the department she or he is
 working at.', 1, 'SELECT * FROM email.person;', 'Equi Join', 1, 30, '', 1),
-(2, 'For each department: Find out how many emails in total were sent out from employees working there.
+(2, 'Number of emails sent out per department', 'For each department: Find out how many emails in total were sent out from employees working there.
 The output per department shall contain the corresponding number of emails.', 1, 'SELECT * FROM email.person;', 'Equi Join', 2, 30, 'Use WHERE clause', 1),
-(3, 'For each department: Find out how many emails in total were sent to employees working there (hint:
+(3, 'Number of emails received per department', 'For each department: Find out how many emails in total were sent to employees working there (hint:
 carbon copies included). The output shall have the same structure as the output of Task 1.2.', 1, 'SELECT * FROM email.person;', 'Equi Join', 3, 30, '', 1),
-(4, 'Do people that earn more than the average salary in their department write more emails than those who
+(4, 'Correlation between salary and number of emails', 'Do people that earn more than the average salary in their department write more emails than those who
 don’t? Query for people that earn more than the average salary at their department and find out whether they
 write more emails than the other employees that earn less than the average salary at their department
 (equal is not considered). Check that for each department. First compute the result for the average
@@ -67,38 +68,38 @@ salary for that department. Then produce the output of all the people that earn 
 Salary and accordingly produce the output for all the people who earn less than the avg. Salary.
 Produce a query result per department that contains the number of emails written by the people earning
 more and the people earning less than the average.', 1, 'SELECT * FROM email.person;', 'Theta Join', 1, 120, '', 2),
-(5, 'You have to introduce a new element (attribute) to the email’s entity set (to your own copy of email
+(5, 'Update the schema', 'You have to introduce a new element (attribute) to the email’s entity set (to your own copy of email
 table you created in task 3.1). Find the general syntax to do that Remember: Delete the tables that you
 have created.', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 1, 6, 'First create a copy of email table (in the “public” schema) and name it with “email_yourname” (e.g.
 email_elmamooz) and execute the queries of task 3 (3.1, 3.2) on this new table. Add/delete data and
 attributes just in your own copy of email table.', 3),
-(6, 'Now, use the syntax from task 3.2 and add a new element “priority” to the email’s entity set with a
+(6, 'Add information for entity set with default value', 'Now, use the syntax from task 3.2 and add a new element “priority” to the email’s entity set with a
 default value of 1 for each entry. Then take a single entry of your choice (with a certain id) and set its
 priority to a value of 3. Remember : Drop the table you created in task 3.1.', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 2, 24, '', 3),
-(7, 'Now, use the syntax from task 3.2 and add a new element “priority” to the email’s entity set with a
+(7, 'Find missing values', 'Now, use the syntax from task 3.2 and add a new element “priority” to the email’s entity set with a
 default value of 1 for each entry. Then take a single entry of your choice (with a certain id) and set its
 priority to a value of 3. Remember : Drop the table you created in task 3.1.', 1, 'SELECT * FROM email.person;', 'Missing Values', 1, 30, '', 4),
-(8, 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
+(8, 'Emails between two dates', 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
 which date and time format is used in email!', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 1, 12, '', 5),
-(9, 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
+(9, 'Emails between two values for certain department', 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
 31.10.2001', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 60, '', 5),
-(10, 'If the network nodes (the persons) are fully connected, how many hops are needed to reach everyone in
+(10, 'Network size by e-mail', 'If the network nodes (the persons) are fully connected, how many hops are needed to reach everyone in
 Enron from Larry May by email? Consider the “from” and “to” fields to compute the amount of hops that
 is needed to reach everyone in Enron.', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Network Analysis', 1, 120, 'you can use a UDF (User defined function) to solve the following two tasks.', 6),
-(11, 'How many hops are needed to reach everyone from Larry May by their “knows" relationship (similar to
+(11, 'Network size by "knows" relation', 'How many hops are needed to reach everyone from Larry May by their “knows" relationship (similar to
 task 6.1)?', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Network Analysis', 2, 30, '', 6),
-(12, 'Which people are in the 2-hop email network? Again, consider the “knows” relationship, but only for
+(12, 'Two-hop email network', 'Which people are in the 2-hop email network? Again, consider the “knows” relationship, but only for
 people that are reachable with two hops', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Network Analysis', 3, 60, '', 6),
-(13, 'Find out who sent emails to exact 7 TO-recipients. The output shall contain the name(s) of the sender(s).', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Network Analysis', 4, 60, '', 6),
+(13, 'Social network', 'Find out who sent emails to exact 7 TO-recipients. The output shall contain the name(s) of the sender(s).', 1, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Network Analysis', 4, 60, '', 6),
 
 -- Cassandra Tasks
-(14, 'For each person you want to know in which department she or he works. The output should contain a
+(14, 'List of people with their department', 'For each person you want to know in which department she or he works. The output should contain a
 person’s first name and last name and the name of the department she or he is working at.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 1, 30, '', 1),
-(15, 'For each department: Find out how many emails in total were sent out from employees working there.
+(15, 'Number of emails sent out per department', 'For each department: Find out how many emails in total were sent out from employees working there.
 The output per department (name) shall contain the corresponding number of emails.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 2, 60, '', 1),
-(16, 'For each department: Find out how many emails in total were sent to employees working there (hint:
+(16, 'Number of emails received per department', 'For each department: Find out how many emails in total were sent to employees working there (hint:
 carbon copies included). The output shall have the same structure as the output of Task 1.2.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 3, 60, '', 1),
-(17, 'Do people that earn more than the average salary in their department write more emails than those who
+(17, 'Correlation between salary and number of emails', 'Do people that earn more than the average salary in their department write more emails than those who
 don’t?
 Query for people that earn more than the average salary at their department and find out whether they
 write more emails than the other employees that earn less than the average salary at their department
@@ -108,29 +109,29 @@ that department. Then produce the output of all the people that earn more than t
 accordingly produce the output for all the people who earn less than the avg. Salary.
 Produce a query result per department that contains the number of emails written by the people earning
 more and the people earning less than the average.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Theta Join', 1, 120, '', 2),
-(18, 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
+(18, 'Update the schema', 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
 department table you created). Find the general syntax to do that.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 1, 30, 'First create a copy of the department table (in the “public” schema) and name it with
 “department_yourname” (e.g. department_dude) and execute the queries of task 3 (3.1, 3.2) on this
 new table. Add/delete data and attributes just in your own copy of the table. Use the export/import
 from the Cassandra web tool to download/upload data.', 3),
-(19, 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
+(19, 'Add information for entity set with default value', 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
 Then take a single department of your choice and find the number of employees working for this
 department and insert this value.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 2, 60, '', 3),
-(20, 'Find missing values for each attribute of the e-mails.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 30, '', 4),
-(21, 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
+(20, 'Find missing values', 'Find missing values for each attribute of the e-mails.', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 30, '', 4),
+(21, 'Emails between two dates', 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
 which date and time format is used in email!', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 1, 30, '', 5),
-(22, 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
+(22, 'Emails between two values for certain department', 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
 31.10.2001', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 30, '', 5),
 
 
 -- Neo4j Tasks
-(23, 'For each person you want to know in which department she or he works. The output should contain a
+(23, 'List of people with their department', 'For each person you want to know in which department she or he works. The output should contain a
 person’s first name and last name and the name of the department she or he is working at.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 1, 60, '', 1),
-(24, 'For each department: Find out how many emails in total were sent out from employees working there.
+(24, 'Number of emails sent out per department', 'For each department: Find out how many emails in total were sent out from employees working there.
 The output per department (name) shall contain the corresponding number of emails.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 2, 30, '', 1),
-(25, 'For each department: Find out how many emails in total were sent to employees working there (hint:
+(25, 'Number of emails received per department', 'For each department: Find out how many emails in total were sent to employees working there (hint:
 carbon copies included). The output shall have the same structure as the output of Task 1.2.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 3, 30, '', 1),
-(26, 'Do people that earn more than the average salary in their department write more emails than those who
+(26, 'Correlation between salary and number of emails', 'Do people that earn more than the average salary in their department write more emails than those who
 don’t?
 Query for people that earn more than the average salary at their department and find out whether they
 write more emails than the other employees that earn less than the average salary at their department
@@ -140,29 +141,28 @@ that department. Then produce the output of all the people that earn more than t
 accordingly produce the output for all the people who earn less than the avg. Salary.
 Produce a query result per department that contains the number of emails written by the people earning
 more and the people earning less than the average.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Theta Join', 1, 120, '', 2),
-(27, 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
+(27, 'Update the schema', 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
 department table you created). Find the general syntax to do that.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 1, 6, 'First create a copy of the department table (in the “public” schema) and name it with
 “department_yourname” (e.g. department_dude) and execute the queries of task 3 (3.1, 3.2) on this
 new table. Add/delete data and attributes just in your own copy of the table. Use the export/import
 from the Cassandra web tool to download/upload data.', 3),
-(28, 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
+(28, 'Add a new attribute to the email nodes', 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
 Then take a single department of your choice and find the number of employees working for this
 department and insert this value.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 2, 24, '', 3),
-(29, 'Find missing values for each attribute of the e-mails.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 60, '', 4),
-(30, 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
+(29, 'Find missing values', 'Find missing values for each attribute of the e-mails.', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 60, '', 4),
+(30, 'Emails between two dates', 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
 which date and time format is used in email!', 3, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 1, 30, '', 5),
-(31, 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
-31.10.2001', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 12, '', 5),
+(31, 'Emails between two dates for Albert Meyers', 'Albert Meyers is an employee of Enron. Find all emails he received between in 2001. ', 2, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 12, 'cc included', 5),
 
 
 -- MongoDB Tasks
-(32, 'For each person you want to know in which department she or he works. The output should contain a
+(32, 'List of people with their department', 'For each person you want to know in which department she or he works. The output should contain a
 person’s first name and last name and the name of the department she or he is working at.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 1, 60, '', 1),
-(33, 'For each department: Find out how many emails in total were sent out from employees working there.
+(33, 'Number of emails sent out per department', 'For each department: Find out how many emails in total were sent out from employees working there.
 The output per department (name) shall contain the corresponding number of emails.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 2, 30, '', 1),
-(34, 'For each department: Find out how many emails in total were sent to employees working there (hint:
+(34, 'Number of emails received per department', 'For each department: Find out how many emails in total were sent to employees working there (hint:
 carbon copies included). The output shall have the same structure as the output of Task 1.2.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Equi Join', 3, 30, '', 1),
-(35, 'Do people that earn more than the average salary in their department write more emails than those who
+(35, 'Correlation between salary and number of emails', 'Do people that earn more than the average salary in their department write more emails than those who
 don’t?
 Query for people that earn more than the average salary at their department and find out whether they
 write more emails than the other employees that earn less than the average salary at their department
@@ -172,19 +172,19 @@ that department. Then produce the output of all the people that earn more than t
 accordingly produce the output for all the people who earn less than the avg. Salary.
 Produce a query result per department that contains the number of emails written by the people earning
 more and the people earning less than the average.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Theta Join', 1, 120, '', 2),
-(36, 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
+(36, 'Add information for entity set', 'You have to introduce a new element (attribute) to the department’s entity set (to your own copy of
 department table you created). Find the general syntax to do that.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 1, 6, 'First create a copy of the department table (in the “public” schema) and name it with
 “department_yourname” (e.g. department_dude) and execute the queries of task 3 (3.1, 3.2) on this
 new table. Add/delete data and attributes just in your own copy of the table. Use the export/import
 from the Cassandra web tool to download/upload data.', 3),
-(37, 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
+(37, 'Add information for entity set with default value', 'Now, use the syntax from task 3.1 and add a new column “num_employees” to the department table.
 Then take a single department of your choice and find the number of employees working for this
 department and insert this value.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Schema Evolution', 2, 24, '', 3),
-(38, 'Find missing values for each attribute of the e-mails.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 60, '', 4),
-(39, 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
+(38, 'Find missing values', 'Find missing values for each attribute of the e-mails.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Missing values', 1, 60, '', 4),
+(39, 'Emails between two dates', 'Select all emails that have been written between the 01.09.2001 and the 31.10.2001. First, find out
 which date and time format is used in email!', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 1, 30, '', 5),
-(40, 'Richard Shapiro is an employee of Enron. Find all emails he received between the 01.09.2001 and the
-31.10.2001', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 12, '', 5);
+(40, 'Emails between two dates for Larry John May', 'Larry May is an employee of Enron. Find all emails he received between the 01.10.2001 and the
+31.10.2001.', 4, 'SELECT department_name, person_firstname, person_lastname FROM enron.perdep;', 'Range queries', 2, 12, '', 5);
 
 
 
