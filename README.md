@@ -14,11 +14,11 @@ A user statistics dashboard based on the PERN stack. It is to be integrated into
 ## Setup
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/davott46/DBMS_Project_5.git
+   git clone https://github.com/davott46/DBMS_Project_5_final.git
    ```
 2. **Navigate to the Project Directory:**
    ```bash
-   cd DBMS_Project_5
+   cd DBMS_Project_5_final
    ```
 3. **Install Dependencies**
    ```bash
